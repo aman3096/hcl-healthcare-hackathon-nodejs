@@ -115,3 +115,9 @@ HIPAA-Lite & Security Considerations
 
     Logging & Error Handling: Centralized middleware to catch, log (avoid PII in logs), and return standardized error payloads.
 
+
+![image](https://github.com/user-attachments/assets/db53b743-1a1d-474f-8144-7026f60d555b)
+
+![image](https://github.com/user-attachments/assets/a6043bd0-15e4-4ba7-8db5-aca851b2ad83)
+
+![image](https://github.com/user-attachments/assets/d07f601c-40da-46d6-b1cb-f6bec33b0438)
