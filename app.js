@@ -1,20 +1,16 @@
 // server.js
-import express from 'express';
-var express = require('express');
-var jwt = require('jsonwebtoken');
-import { Pool } from 'pg';
-var dotenv = require('dotenv');
-var bodyParser= requuire('body-parser');
-var loginRouter = require("./routes/index");
-var staffRouter = require("./routes/staff");
-var loginRouter = require('./routes/login');
-var shiftRouter = require('./routes/shift');
+import * as express from 'express';
+import dotenv from 'dotenv';
+import * as bodyParser from 'body-parser';
+import indexRouter from "./routes/index";
+import staffRouter from "./routes/staff";
+import loginRouter from './routes/login';
+import shiftRouter from './routes/shift';
 
 var app = express();
 
 dotenv.config();
 
-const app = express();
 app.use(bodyParser.json());
 
 // Setup PostgreSQL pool
@@ -29,6 +25,7 @@ const pool = new Pool({
 // JWT secret
 const port = process.env.PORT || 3000;
 
+app.use("/", indexRouter);
 app.use("/api", loginRouter);
 app.use("/api/staff", staffRouter);
 app.use("/api/shifts", shiftRouter);

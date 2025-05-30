@@ -1,6 +1,7 @@
-var express = require('express');
+import * as express from 'express';
+import * as bcrypt from "bcrypt";
+
 var router = express.Router();
-var bcrypt = require("bcrypt");
 
 // --- 1. USER/ADMIN LOGIN ---
 router.post('/auth/login', async (req, res) => {
@@ -25,4 +26,4 @@ router.post('/auth/login', async (req, res) => {
 });
 
 
-module.exports = router;
+export default router;

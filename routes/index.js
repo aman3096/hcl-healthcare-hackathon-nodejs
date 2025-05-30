@@ -1,8 +1,8 @@
-var express = require('express');
+import * as express from 'express';
 var router = express.Router();
 
-// --- 8. MARK ATTENDANCE ---
-router.post('/api/attendance', authenticateToken, async (req, res) => {
+// ---  MARK ATTENDANCE ---
+router.post('/api/attendance', async (req, res) => {
   const { assignmentId, status, remarks } = req.body;
   if (!assignmentId || !['present', 'absent'].includes(status)) {
     return res.status(400).json({ error: 'assignmentId and valid status ("present" or "absent") are required' });
@@ -36,8 +36,8 @@ router.post('/api/attendance', authenticateToken, async (req, res) => {
   }
 });
 
-// --- 9. GET WEEKLY CONFLICT ALERTS ---
-router.get('/api/alerts/conflicts', authenticateToken, async (req, res) => {
+// --- GET WEEKLY CONFLICT ALERTS ---
+router.get('/api/alerts/conflicts', async (req, res) => {
   const { weekOf } = req.query;
   if (!weekOf) return res.status(400).json({ error: 'weekOf query parameter is required' });
 
@@ -79,4 +79,4 @@ router.get('/api/alerts/conflicts', authenticateToken, async (req, res) => {
 });
 
 
-module.exports = router;
+export default router;

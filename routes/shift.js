@@ -1,4 +1,4 @@
-var express = require("express");
+import * as express from 'express';
 var router = express.Router();
 
 // --- 4. LIST SHIFTS ---
@@ -131,7 +131,5 @@ router.get('/:id/assignments', async (req, res) => {
     res.status(500).json({ error: 'Server error' });
   }
 });
-
-
 
 export default router;

@@ -1,4 +1,4 @@
-var express = require('express');
+import * as express from 'express';
 var router = express.Router();
 
 // --- 2. GET STAFF LIST ---
@@ -29,4 +29,4 @@ router.post('/api/staff', async (req, res) => {
   }
 });
 
-module.exports = router;
+export default router;
