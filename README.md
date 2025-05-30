@@ -70,19 +70,21 @@ npm run dev
 
 ```sql
 -- Admins
-CREATE TABLE admins (
-  id SERIAL PRIMARY KEY,
+CREATE TABLE users (
+  id uuid PRIMARY KEY,
+  name VARCHAR(100),
   email VARCHAR(255) UNIQUE NOT NULL,
   password VARCHAR(255) NOT NULL -- hashed
+  address VARCHAR(255),
+  job_title VARHAR(255),
+  department VARCHAR(100),
+  employee_id SERIAL NOT NULL,
+  hire_date DATE NOT NULL,
+  emergency_contact_name VARCHAR(255),
+  emergency_contact_relation VARCHAR(100),
+  emergency_contact_phone VARCHAR(20)
 );
 
--- Staff
-CREATE TABLE staff (
-  id SERIAL PRIMARY KEY,
-  name VARCHAR(100) NOT NULL,
-  role VARCHAR(50) NOT NULL,
-  contact VARCHAR(20)
-);
 
 -- Shifts
 CREATE TYPE shift_type AS ENUM ('morning', 'afternoon', 'night');
@@ -118,6 +120,8 @@ CREATE TABLE attendance (
 |--------|-----------------------------------------------|---------------------------------|
 | POST   | `/api/auth/login`                             | Admin login                     |
 | GET    | `/api/staff`                                  | List staff                      |
+| GET    | `/api/staff?name=`                            | List staff by name              |
+| GET    | `/api/staff?email=`                            | List staff by name              |
 | POST   | `/api/staff`                                  | Add staff                       |
 | GET    | `/api/shifts`                                 | List shifts                     |
 | POST   | `/api/shifts`                                 | Create shift                    |
@@ -147,8 +151,4 @@ cd client && npm install
 cd ../server && npm install
 
 # Run frontend & backend concurrently
-<<<<<<< HEAD
 npm run dev
-=======
-npm run dev
->>>>>>> 3fc47bb (feat: Readme)
