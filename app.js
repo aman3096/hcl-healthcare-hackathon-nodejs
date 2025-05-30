@@ -19,9 +19,6 @@ const app = express();
 app.use(bodyParser.json());
 
 // Setup PostgreSQL pool
-const pool = new Pool({
-  connectionString: process.env.DATABASE_URL,
-});
 
 const pool = new Pool({
   user: process.env.DB_USERNAME, 
