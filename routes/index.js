@@ -1,4 +1,4 @@
-import * as express from 'express';
+var express = require('express');
 var router = express.Router();
 
 // ---  MARK ATTENDANCE ---
@@ -78,5 +78,4 @@ router.get('/api/alerts/conflicts', async (req, res) => {
   }
 });
 
-
-export default router;
+module.exports = router;

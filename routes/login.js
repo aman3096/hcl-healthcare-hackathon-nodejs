@@ -1,5 +1,5 @@
-import * as express from 'express';
-import * as bcrypt from "bcrypt";
+var express = require('express');
+var bcrypt = require("bcrypt");
 
 var router = express.Router();
 
@@ -9,7 +9,7 @@ router.post('/auth/login', async (req, res) => {
   if (!email || !password) return res.status(400).json({ error: 'Email and password required' });
 
   try {
-    const { rows } = await pool.query('SELECT * FROM admins WHERE email = $1', [email]);
+    const { rows } = await pool.query('SELECT * FROM user WHERE email = $1', [email]);
     const admin = rows[0];
     if (!admin) return res.status(401).json({ error: 'Invalid credentials' });
 
@@ -25,5 +25,4 @@ router.post('/auth/login', async (req, res) => {
   }
 });
 
-
-export default router;
+module.exports = router;

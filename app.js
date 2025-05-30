@@ -1,13 +1,15 @@
 // server.js
-import * as express from 'express';
-import dotenv from 'dotenv';
-import * as bodyParser from 'body-parser';
-import indexRouter from "./routes/index";
-import staffRouter from "./routes/staff";
-import loginRouter from './routes/login';
-import shiftRouter from './routes/shift';
+var express = require('express');
+var dotenv = require('dotenv');
+var bodyParser = require('body-parser');
+const pg = require('pg');
+var indexRouter = require("./routes/index.js");
+var staffRouter = require("./routes/staff.js");
+var loginRouter = require("./routes/login.js");
+var shiftRouter = require("./routes/shift.js");
 
 var app = express();
+const { Pool } = pg
 
 dotenv.config();
 
@@ -29,7 +31,7 @@ app.use("/", indexRouter);
 app.use("/api", loginRouter);
 app.use("/api/staff", staffRouter);
 app.use("/api/shifts", shiftRouter);
-app.user("/api/staff", staffRouter);
+app.use("/api/staff", staffRouter);
 
 
 // Start server
@@ -39,5 +41,6 @@ app.listen(port, () => {
 });
 
 module.exports = {
-  pool: pool
+  pool: pool,
+  app
 }
