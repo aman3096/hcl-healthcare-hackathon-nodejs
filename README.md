@@ -1,123 +1,149 @@
-1. Front-end Design (React + Context API + Tailwind)
-1.1 Pages & Routes
+# 🏥 Healthcare Staff Scheduler & Attendance Tracker
 
-    /login
+A lightweight full-stack MVP web application designed for hospitals and clinics to manage staff shifts, track attendance, and improve operational efficiency. Built with React, Tailwind CSS, Node.js, PostgreSQL, and RESTful APIs.
 
-        Admin login form (email + password)
+---
 
-    /staff
+## 📌 Key Features
 
-        List/Add/Edit staff members
+- 👤 Secure Admin Login
+- 👥 Staff Management (Doctors, Nurses, Technicians)
+- 📆 Shift Scheduler (Morning, Afternoon, Night)
+- 🗓️ Daily & Weekly Shift Views
+- ✅ Attendance Tracking with Status & Remarks
+- 🔍 Search & Filter by Staff, Role, Shift
+- ⚠️ Shift Conflict Alerts (Double Booking Prevention)
 
-    /shifts
+---
 
-        Create shifts (date, type, capacity)
+## 🧱 Tech Stack
 
-        Filter by date
+| Layer      | Tech                 |
+|------------|----------------------|
+| Frontend   | React + Context API + Tailwind CSS |
+| Backend    | Node.js + Express    |
+| Database   | PostgreSQL           |
+| APIs       | REST                 |
+| DevOps     | GitHub CI/CD, Cloud Deployment |
 
-    /assignments
+---
 
-        Assign staff → shift slots
+## 🗂️ MVP Pages
 
-        Prevent double-booking
+- `/login` – Admin login with email & password
+- `/staff` – Manage staff list: add, edit, search, sort
+- `/shifts` – Create and list shifts with filters
+- `/assignments` – Assign staff to shift slots with validation
+- `/schedule` – Visual weekly or daily schedule with status indicators
+- `/attendance` – Mark attendance (present/absent) with remarks
 
-    /schedule
+---
 
-        Daily/weekly calendar view
+## 🧩 Component Design (Frontend)
 
-        Color-coded by shift type
+```plaintext
+<App>
+ ├─ <AuthProvider>
+ │   └─ <Router>
+ │       ├─ <LoginPage>
+ │       ├─ <ProtectedRoute>
+ │       │   ├─ <Navbar> – Links: Staff, Shifts, Schedule, Attendance
+ │       │   └─ <PageContainer>
+ │       │       ├─ <StaffPage>
+ │       │       ├─ <ShiftPage>
+ │       │       ├─ <AssignmentPage>
+ │       │       ├─ <SchedulePage>
+ │       │       └─ <AttendancePage>
 
-    /attendance
 
-        Mark Present/Absent + remarks
+# Clone the repo
+git clone https://github.com/your-org/healthcare-scheduler.git
 
+# Install client & server deps
+cd client && npm install
+cd ../server && npm install
 
-2. Database Schema (PostgreSQL)
+# Run frontend & backend concurrently
+npm run dev
 
+## 🗃️ Database Schema (PostgreSQL)
+
+```sql
 -- Admins
 CREATE TABLE admins (
-  id         SERIAL PRIMARY KEY,
-  email      VARCHAR(255) UNIQUE NOT NULL,
-  password   VARCHAR(255) NOT NULL,  -- hashed
-  created_at TIMESTAMPTZ DEFAULT NOW()
+  id SERIAL PRIMARY KEY,
+  email VARCHAR(255) UNIQUE NOT NULL,
+  password VARCHAR(255) NOT NULL -- hashed
 );
 
 -- Staff
 CREATE TABLE staff (
-  id           SERIAL PRIMARY KEY,
-  name         VARCHAR(100) NOT NULL,
-  role         VARCHAR(50)  NOT NULL, -- doctor, nurse, technician
-  contact      VARCHAR(20),
-  created_at   TIMESTAMPTZ DEFAULT NOW()
+  id SERIAL PRIMARY KEY,
+  name VARCHAR(100) NOT NULL,
+  role VARCHAR(50) NOT NULL,
+  contact VARCHAR(20)
 );
 
 -- Shifts
-CREATE TYPE shift_type AS ENUM ('morning','afternoon','night');
+CREATE TYPE shift_type AS ENUM ('morning', 'afternoon', 'night');
+
 CREATE TABLE shifts (
-  id           SERIAL PRIMARY KEY,
-  date         DATE     NOT NULL,
-  type         shift_type NOT NULL,
-  capacity     INT      NOT NULL,
-  created_at   TIMESTAMPTZ DEFAULT NOW(),
+  id SERIAL PRIMARY KEY,
+  date DATE NOT NULL,
+  type shift_type NOT NULL,
+  capacity INT NOT NULL,
   UNIQUE(date, type)
 );
 
--- Assignments (which staff on which shift)
+-- Assignments
 CREATE TABLE shift_assignments (
-  id           SERIAL PRIMARY KEY,
-  shift_id     INT REFERENCES shifts(id) ON DELETE CASCADE,
-  staff_id     INT REFERENCES staff(id) ON DELETE CASCADE,
-  assigned_at  TIMESTAMPTZ DEFAULT NOW(),
+  id SERIAL PRIMARY KEY,
+  shift_id INT REFERENCES shifts(id) ON DELETE CASCADE,
+  staff_id INT REFERENCES staff(id) ON DELETE CASCADE,
   UNIQUE(shift_id, staff_id)
 );
 
 -- Attendance
 CREATE TABLE attendance (
-  id               SERIAL PRIMARY KEY,
-  assignment_id    INT REFERENCES shift_assignments(id) ON DELETE CASCADE,
-  status           VARCHAR(10)    NOT NULL, -- 'present','absent'
-  remarks          TEXT,
-  marked_at        TIMESTAMPTZ DEFAULT NOW(),
-  UNIQUE(assignment_id)
+  id SERIAL PRIMARY KEY,
+  assignment_id INT REFERENCES shift_assignments(id) ON DELETE CASCADE,
+  status VARCHAR(10) NOT NULL, -- 'present' or 'absent'
+  remarks TEXT
 );
 
-3. REST API enpoints
-| Method               | Path                                      | Description                             | Body / Query                          |
-| -------------------- | ----------------------------------------- | --------------------------------------- | ------------------------------------- |
-| **Auth**             |                                           |                                         |                                       |
-| `POST`               | `/api/auth/login`                         | Admin login → returns JWT               | `{ email, password }`                 |
-| **Staff**            |                                           |                                         |                                       |
-| `GET`                | `/api/staff`                              | List all staff (filter: `?role=&name=`) | N/A                                   |
-| `POST`               | `/api/staff`                              | Add a new staff                         | `{ name, role, contact }`             |
-| `PUT`                | `/api/staff/:id`                          | Update staff details                    | `{ name?, role?, contact? }`          |
-| `DELETE`             | `/api/staff/:id`                          | Remove staff                            | N/A                                   |
-| **Shifts**           |                                           |                                         |                                       |
-| `GET`                | `/api/shifts`                             | List shifts (filter: `?date=&type=`)    | N/A                                   |
-| `POST`               | `/api/shifts`                             | Create a shift                          | `{ date, type, capacity }`            |
-| `PUT`                | `/api/shifts/:id`                         | Update shift (e.g., capacity)           | `{ capacity? }`                       |
-| **Assignments**      |                                           |                                         |                                       |
-| `GET`                | `/api/shifts/:id/assignments`             | List assignments for one shift          | N/A                                   |
-| `POST`               | `/api/shifts/:id/assignments`             | Assign staff to shift                   | `{ staff_ids: [1,2,3] }`              |
-| **Attendance**       |                                           |                                         |                                       |
-| `GET`                | `/api/attendance?date=&shiftId=`          | List attendance records                 | N/A                                   |
-| `POST`               | `/api/attendance`                         | Mark attendance                         | `{ assignment_id, status, remarks? }` |
-| **Reports / Alerts** |                                           |                                         |                                       |
-| `GET`                | `/api/alerts/conflicts?weekOf=YYYY-MM-DD` | Weekly shift-conflict summary           | N/A                                   |
+## 📡 REST API Endpoints
 
+| Method | Endpoint                                      | Description                     |
+|--------|-----------------------------------------------|---------------------------------|
+| POST   | `/api/auth/login`                             | Admin login                     |
+| GET    | `/api/staff`                                  | List staff                      |
+| POST   | `/api/staff`                                  | Add staff                       |
+| GET    | `/api/shifts`                                 | List shifts                     |
+| POST   | `/api/shifts`                                 | Create shift                    |
+| POST   | `/api/shifts/:id/assignments`                 | Assign staff to shift           |
+| GET    | `/api/shifts/:id/assignments`                 | View assigned staff             |
+| POST   | `/api/attendance`                             | Mark attendance                 |
+| GET    | `/api/alerts/conflicts?weekOf=YYYY-MM-DD`     | Weekly shift conflict alerts    |
 
-HIPAA-Lite & Security Considerations
+## ✅ Compliance & Security
 
-    Authentication: JWT with HTTPS everywhere.
+- ✅ JWT Authentication & HTTPS
+- ✅ Server-side validation & error handling
+- ✅ Data encryption in transit (TLS)
+- ✅ Logging (without PII)
+- ✅ Basic HIPAA-oriented structure
 
-    Authorization: Only admin role permitted to all endpoints.
+---
 
-    Data Encryption: TLS in transit; at-rest encryption on PostgreSQL side if required.
+## 🚀 Quick Start (for Dev)
 
-    Logging & Error Handling: Centralized middleware to catch, log (avoid PII in logs), and return standardized error payloads.
+```bash
+# Clone the repo
+git clone https://github.com/your-org/healthcare-scheduler.git
 
+# Install client & server dependencies
+cd client && npm install
+cd ../server && npm install
 
-![image](https://github.com/user-attachments/assets/db53b743-1a1d-474f-8144-7026f60d555b)
-
-![image](https://github.com/user-attachments/assets/a6043bd0-15e4-4ba7-8db5-aca851b2ad83)
-
-![image](https://github.com/user-attachments/assets/d07f601c-40da-46d6-b1cb-f6bec33b0438)
+# Run frontend & backend concurrently
+npm run dev
