@@ -1,41 +1,63 @@
-var createError = require('http-errors');
+// server.js
+import express from 'express';
 var express = require('express');
-var path = require('path');
-var cookieParser = require('cookie-parser');
-var logger = require('morgan');
-
-var indexRouter = require('./routes/index');
-var usersRouter = require('./routes/users');
+var jwt = require('jsonwebtoken');
+var bcrypt = require('bcrypt');
+import { Pool } from 'pg';
+var dotenv = require('dotenv');
+var bodyParser= requuire('body-parser');
+var loginRouter = require("./routes/index");
+var staffRouter = require("./routes/staff");
+var loginRouter = require('./routes/login');
+var shiftRouter = require('./routes/shift');
 
 var app = express();
 
-// view engine setup
-app.set('views', path.join(__dirname, 'views'));
-app.set('view engine', 'jade');
+dotenv.config();
 
-app.use(logger('dev'));
-app.use(express.json());
-app.use(express.urlencoded({ extended: false }));
-app.use(cookieParser());
-app.use(express.static(path.join(__dirname, 'public')));
+const app = express();
+app.use(bodyParser.json());
 
-app.use('/', indexRouter);
-app.use('/users', usersRouter);
-
-// catch 404 and forward to error handler
-app.use(function(req, res, next) {
-  next(createError(404));
+// Setup PostgreSQL pool
+const pool = new Pool({
+  connectionString: process.env.DATABASE_URL,
 });
 
-// error handler
-app.use(function(err, req, res, next) {
-  // set locals, only providing error in development
-  res.locals.message = err.message;
-  res.locals.error = req.app.get('env') === 'development' ? err : {};
+const pool = new Pool({
+  user: process.env.DB_USERNAME, 
+  host: process.env.DB_HOST,
+  database: process.env.DB_NAME, 
+  password: process.env.DB_PASSWORD,
+  port: process.env.DB_PORT,
+});
+// JWT secret
+const JWT_SECRET = process.env.JWT_SECRET || 'your_jwt_secret';
+const port = process.env.PORT || 3000;
+// Middleware: Authenticate JWT Token
+function authenticateToken(req, res, next) {
+  const authHeader = req.headers['authorization'];
+  if (!authHeader) return res.sendStatus(401);
+  const token = authHeader.split(' ')[1];
+  if (!token) return res.sendStatus(401);
 
-  // render the error page
-  res.status(err.status || 500);
-  res.render('error');
+  jwt.verify(token, JWT_SECRET, (err, user) => {
+    if (err) return res.sendStatus(403);
+    req.user = user; // user contains { id, email }
+    next();
+  });
+}
+app.use("/api", loginRouter);
+app.use("/api/staff", staffRouter);
+app.use("/api/shifts", shiftRouter);
+app.user("/api/staff", staffRouter);
+
+
+// Start server
+const PORT = process.env.PORT || 4000;
+app.listen(port, () => {
+  console.log(`Server is running on port ${port} here`);
 });
 
-module.exports = app;
+module.exports = {
+  pool: pool
+}
