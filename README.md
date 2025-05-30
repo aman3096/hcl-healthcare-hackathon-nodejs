@@ -88,10 +88,11 @@ CREATE TABLE staff (
 CREATE TYPE shift_type AS ENUM ('morning', 'afternoon', 'night');
 
 CREATE TABLE shifts (
-  id SERIAL PRIMARY KEY,
-  date DATE NOT NULL,
-  type shift_type NOT NULL,
-  capacity INT NOT NULL,
+  id           SERIAL PRIMARY KEY,
+  date         DATE     NOT NULL,
+  type         shift_type NOT NULL,
+  capacity     INT      NOT NULL,
+  created_at   TIMESTAMPTZ DEFAULT NOW(),
   UNIQUE(date, type)
 );
 
@@ -146,4 +147,8 @@ cd client && npm install
 cd ../server && npm install
 
 # Run frontend & backend concurrently
+<<<<<<< HEAD
 npm run dev
+=======
+npm run dev
+>>>>>>> 3fc47bb (feat: Readme)
