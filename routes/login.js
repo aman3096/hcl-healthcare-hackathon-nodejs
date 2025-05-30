@@ -1,5 +1,6 @@
 var express = require('express');
 var router = express.Router();
+var bcrypt = require("bcrypt");
 
 // --- 1. USER/ADMIN LOGIN ---
 router.post('/auth/login', async (req, res) => {

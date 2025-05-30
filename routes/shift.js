@@ -2,7 +2,7 @@ var express = require("express");
 var router = express.Router();
 
 // --- 4. LIST SHIFTS ---
-router.get('/', authenticateToken, async (req, res) => {
+router.get('/', async (req, res) => {
   const { date, type } = req.query;
   let query = 'SELECT s.id, s.date, s.type, s.capacity, COUNT(sa.id) AS assigned_count FROM shifts s LEFT JOIN shift_assignments sa ON s.id = sa.shift_id GROUP BY s.id ORDER BY s.date DESC, s.type ASC';
   const params = [];
@@ -34,7 +34,7 @@ router.get('/', authenticateToken, async (req, res) => {
 });
 
 // --- 5. CREATE SHIFT ---
-router.post('/', authenticateToken, async (req, res) => {
+router.post('/',  async (req, res) => {
   const { date, type, capacity } = req.body;
   if (!date || !type || !capacity) return res.status(400).json({ error: 'Date, type and capacity required' });
 
@@ -55,7 +55,7 @@ router.post('/', authenticateToken, async (req, res) => {
 });
 
 // --- 6. ASSIGN STAFF TO SHIFT ---
-router.post('/:id/assignments', authenticateToken, async (req, res) => {
+router.post('/:id/assignments', async (req, res) => {
   const shiftId = req.params.id;
   const { staffId } = req.body;
 
@@ -107,7 +107,7 @@ router.post('/:id/assignments', authenticateToken, async (req, res) => {
 });
 
 // --- 7. GET ASSIGNED STAFF FOR SHIFT ---
-router.get('/:id/assignments', authenticateToken, async (req, res) => {
+router.get('/:id/assignments', async (req, res) => {
   const shiftId = req.params.id;
 
   try {

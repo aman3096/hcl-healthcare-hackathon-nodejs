@@ -2,7 +2,7 @@ var express = require('express');
 var router = express.Router();
 
 // --- 2. GET STAFF LIST ---
-router.get('/api/staff', authenticateToken, async (req, res) => {
+router.get('/api/staff', async (req, res) => {
   try {
     const { rows } = await pool.query('SELECT id, name, role, contact FROM staff ORDER BY name ASC');
     res.json(rows);
@@ -13,7 +13,7 @@ router.get('/api/staff', authenticateToken, async (req, res) => {
 });
 
 // --- 3. ADD STAFF ---
-router.post('/api/staff', authenticateToken, async (req, res) => {
+router.post('/api/staff', async (req, res) => {
   const { name, role, contact } = req.body;
   if (!name || !role) return res.status(400).json({ error: 'Name and role are required' });
 
