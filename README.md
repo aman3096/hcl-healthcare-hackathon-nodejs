@@ -89,22 +89,21 @@ CREATE TABLE users (
 -- Shifts
 CREATE TYPE shift_type AS ENUM ('morning', 'afternoon', 'night');
 
+-- shifts   --
 CREATE TABLE shifts (
-  id           SERIAL PRIMARY KEY,
-  date         DATE     NOT NULL,
-  type         shift_type NOT NULL,
-  capacity     INT      NOT NULL,
-  created_at   TIMESTAMPTZ DEFAULT NOW(),
-  UNIQUE(date, type)
+  id SERIAL PRIMARY KEY,
+  shift_type TEXT CHECK (shift_type IN ('doctor', 'nurse', 'technician', 'other')),
+  start_time TIMESTAMP,
+  end_time TIMESTAMP
 );
-
--- Assignments
+-- Assignments --
 CREATE TABLE shift_assignments (
   id SERIAL PRIMARY KEY,
   shift_id INT REFERENCES shifts(id) ON DELETE CASCADE,
   staff_id INT REFERENCES staff(id) ON DELETE CASCADE,
   UNIQUE(shift_id, staff_id)
 );
+
 
 -- Attendance
 CREATE TABLE attendance (
